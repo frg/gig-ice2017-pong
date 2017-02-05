@@ -184,8 +184,8 @@ button {
     height: calc(100vh - 100px);
 }
 
-.modal.hidden {
-    display: none;
+.hidden {
+    display: none !important;
 }
 
 .modal>.modal-cell {
@@ -267,6 +267,14 @@ button.close-btn:active {
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
     box-shadow: none;
+}
+
+a.fullscrn-btn {
+    margin-top: 26px;
+    margin-bottom: -26px;
+    text-decoration: underline;
+    font-size: 1.2em;
+    display: block;
 }
 
 .header-logo {

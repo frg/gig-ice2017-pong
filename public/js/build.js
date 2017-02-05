@@ -1111,7 +1111,7 @@ Pong.prototype.win = function(message) {
 };
 
 module.exports = Pong;
-},{"./Arena":1,"./Ball":2,"./MessageScreen":4,"./PauseScreen":5,"./Player":6,"./StartScreen":9,"./config":11,"./utils":12,"deep-extend":17,"event-emitter":32,"game-loop":34,"keycode":40,"pixi.js":171,"stats.js":215}],8:[function(require,module,exports){
+},{"./Arena":1,"./Ball":2,"./MessageScreen":4,"./PauseScreen":5,"./Player":6,"./StartScreen":9,"./config":11,"./utils":12,"deep-extend":17,"event-emitter":32,"game-loop":34,"keycode":40,"pixi.js":171,"stats.js":216}],8:[function(require,module,exports){
 var pixi = require('pixi.js'),
     config = require('./config'),
     extend = require('deep-extend'),
@@ -37095,7 +37095,7 @@ function determineCrossOrigin(url) {
     return '';
 }
 
-},{"url":216}],143:[function(require,module,exports){
+},{"url":217}],143:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -51609,13 +51609,160 @@ function blobMiddlewareFactory() {
 }
 
 },{"../../Resource":210,"../../b64":212}],215:[function(require,module,exports){
+/*!
+* screenfull
+* v3.0.0 - 2015-11-24
+* (c) Sindre Sorhus; MIT License
+*/
+(function () {
+	'use strict';
+
+	var isCommonjs = typeof module !== 'undefined' && module.exports;
+	var keyboardAllowed = typeof Element !== 'undefined' && 'ALLOW_KEYBOARD_INPUT' in Element;
+
+	var fn = (function () {
+		var val;
+		var valLength;
+
+		var fnMap = [
+			[
+				'requestFullscreen',
+				'exitFullscreen',
+				'fullscreenElement',
+				'fullscreenEnabled',
+				'fullscreenchange',
+				'fullscreenerror'
+			],
+			// new WebKit
+			[
+				'webkitRequestFullscreen',
+				'webkitExitFullscreen',
+				'webkitFullscreenElement',
+				'webkitFullscreenEnabled',
+				'webkitfullscreenchange',
+				'webkitfullscreenerror'
+
+			],
+			// old WebKit (Safari 5.1)
+			[
+				'webkitRequestFullScreen',
+				'webkitCancelFullScreen',
+				'webkitCurrentFullScreenElement',
+				'webkitCancelFullScreen',
+				'webkitfullscreenchange',
+				'webkitfullscreenerror'
+
+			],
+			[
+				'mozRequestFullScreen',
+				'mozCancelFullScreen',
+				'mozFullScreenElement',
+				'mozFullScreenEnabled',
+				'mozfullscreenchange',
+				'mozfullscreenerror'
+			],
+			[
+				'msRequestFullscreen',
+				'msExitFullscreen',
+				'msFullscreenElement',
+				'msFullscreenEnabled',
+				'MSFullscreenChange',
+				'MSFullscreenError'
+			]
+		];
+
+		var i = 0;
+		var l = fnMap.length;
+		var ret = {};
+
+		for (; i < l; i++) {
+			val = fnMap[i];
+			if (val && val[1] in document) {
+				for (i = 0, valLength = val.length; i < valLength; i++) {
+					ret[fnMap[0][i]] = val[i];
+				}
+				return ret;
+			}
+		}
+
+		return false;
+	})();
+
+	var screenfull = {
+		request: function (elem) {
+			var request = fn.requestFullscreen;
+
+			elem = elem || document.documentElement;
+
+			// Work around Safari 5.1 bug: reports support for
+			// keyboard in fullscreen even though it doesn't.
+			// Browser sniffing, since the alternative with
+			// setTimeout is even worse.
+			if (/5\.1[\.\d]* Safari/.test(navigator.userAgent)) {
+				elem[request]();
+			} else {
+				elem[request](keyboardAllowed && Element.ALLOW_KEYBOARD_INPUT);
+			}
+		},
+		exit: function () {
+			document[fn.exitFullscreen]();
+		},
+		toggle: function (elem) {
+			if (this.isFullscreen) {
+				this.exit();
+			} else {
+				this.request(elem);
+			}
+		},
+		raw: fn
+	};
+
+	if (!fn) {
+		if (isCommonjs) {
+			module.exports = false;
+		} else {
+			window.screenfull = false;
+		}
+
+		return;
+	}
+
+	Object.defineProperties(screenfull, {
+		isFullscreen: {
+			get: function () {
+				return Boolean(document[fn.fullscreenElement]);
+			}
+		},
+		element: {
+			enumerable: true,
+			get: function () {
+				return document[fn.fullscreenElement];
+			}
+		},
+		enabled: {
+			enumerable: true,
+			get: function () {
+				// Coerce to boolean in case of old WebKit
+				return Boolean(document[fn.fullscreenEnabled]);
+			}
+		}
+	});
+
+	if (isCommonjs) {
+		module.exports = screenfull;
+	} else {
+		window.screenfull = screenfull;
+	}
+})();
+
+},{}],216:[function(require,module,exports){
 // stats.js - http://github.com/mrdoob/stats.js
 (function(f,e){"object"===typeof exports&&"undefined"!==typeof module?module.exports=e():"function"===typeof define&&define.amd?define(e):f.Stats=e()})(this,function(){var f=function(){function e(a){c.appendChild(a.dom);return a}function u(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();
 u(++l%c.children.length)},!1);var k=(performance||Date).now(),g=k,a=0,r=e(new f.Panel("FPS","#0ff","#002")),h=e(new f.Panel("MS","#0f0","#020"));if(self.performance&&self.performance.memory)var t=e(new f.Panel("MB","#f08","#201"));u(0);return{REVISION:16,dom:c,addPanel:e,showPanel:u,begin:function(){k=(performance||Date).now()},end:function(){a++;var c=(performance||Date).now();h.update(c-k,200);if(c>g+1E3&&(r.update(1E3*a/(c-g),100),g=c,a=0,t)){var d=performance.memory;t.update(d.usedJSHeapSize/
 1048576,d.jsHeapSizeLimit/1048576)}return c},update:function(){k=this.end()},domElement:c,setMode:u}};f.Panel=function(e,f,l){var c=Infinity,k=0,g=Math.round,a=g(window.devicePixelRatio||1),r=80*a,h=48*a,t=3*a,v=2*a,d=3*a,m=15*a,n=74*a,p=30*a,q=document.createElement("canvas");q.width=r;q.height=h;q.style.cssText="width:80px;height:48px";var b=q.getContext("2d");b.font="bold "+9*a+"px Helvetica,Arial,sans-serif";b.textBaseline="top";b.fillStyle=l;b.fillRect(0,0,r,h);b.fillStyle=f;b.fillText(e,t,v);
 b.fillRect(d,m,n,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d,m,n,p);return{dom:q,update:function(h,w){c=Math.min(c,h);k=Math.max(k,h);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=f;b.fillText(g(h)+" "+e+" ("+g(c)+"-"+g(k)+")",t,v);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,g((1-h/w)*p))}}};return f});
 
-},{}],216:[function(require,module,exports){
+},{}],217:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -52349,7 +52496,7 @@ Url.prototype.parseHost = function() {
   if (host) this.hostname = host;
 };
 
-},{"./util":217,"punycode":205,"querystring":208}],217:[function(require,module,exports){
+},{"./util":218,"punycode":205,"querystring":208}],218:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -52367,7 +52514,286 @@ module.exports = {
   }
 };
 
-},{}],218:[function(require,module,exports){
-window.Pong = require('Pong.js');
-window.jQuery = $ = require('jquery');
-},{"Pong.js":7,"jquery":39}]},{},[218]);
+},{}],219:[function(require,module,exports){
+var Pong = window.Pong = require('Pong.js'),
+    $ = require('jquery');
+
+var PongHelpers = require('./pong-helpers.js'),
+    UI = require('./ui.js');
+
+window.onload = function() {
+    var pongElement = document.getElementById('pong'),
+        _pong = window._pong = new Pong(pongElement, {
+            screens: {
+                enable: false
+            }
+        });
+
+    UI.setup(_pong, PongHelpers);
+
+    _pong._defaultPlayerSpeed = (window.innerWidth * window.innerHeight) / 4000;
+    _pong._playerSpeedHandicap = 3;
+
+    // pong.showStats(); // show fps counter
+    window.onresize = PongHelpers.setupResizeLogicFunc(_pong);
+
+    _pong.on('point', function(player) {
+        if (_pong.currentGameMode === 'SINGLE_PLAYER' && _pong.players.a === player) {
+            var hs = localStorage.getItem('SINGLE_PLAYER_HIGHSCORE');
+            if (hs === null || (hs !== null && player.score > hs)) {
+                localStorage.setItem('SINGLE_PLAYER_HIGHSCORE', player.score);
+                $('.header-highscore-score').text(player.score);
+            }
+        }
+    });
+
+    PongHelpers.setupIgcTheme(_pong);
+};
+},{"./pong-helpers.js":220,"./ui.js":221,"Pong.js":7,"jquery":39}],220:[function(require,module,exports){
+module.exports = {
+    setupIgcTheme: function(_pong) {
+        _pong.setScoreDisplayColor('#2f3448');
+        _pong.setLinesColor('#51566a');
+        _pong.setTextStyle({
+            fill: '#ffffff'
+        });
+
+        _pong.setBallColor('#ffffff');
+        _pong.setBackgroundColor('#3f445a');
+        _pong.setBackgroundImage({
+            src: '/assets/i-g-c-logo.svg',
+            aspectRatio: '1:2',
+            stretch: 'height'
+        });
+
+        _pong.players.a.setColor('#63dcfd');
+        _pong.players.a.scoreDisplay.setTextStyle({
+            fill: '#63dcfd',
+            fontStyle: 'bold',
+            fontSize: '80px'
+        });
+
+        _pong.players.b.setColor('#66e07c');
+        _pong.players.b.scoreDisplay.setTextStyle({
+            fill: '#66e07c',
+            fontStyle: 'bold',
+            fontSize: '80px'
+        });
+
+        return this;
+    },
+
+    setupResizeLogicFunc: function(_pong) {
+        var func = function() {
+            console.info('Pong: resized!');
+            var pongElement = document.getElementById('pong');
+            _pong._windowRatio = window.innerWidth * window.innerHeight;
+
+            pongElement.style.height = window.innerHeight + 'px';
+
+            _pong.players.a.width = 0.016 * window.innerWidth;
+            _pong.players.a.height = 0.15 * window.innerHeight;
+            _pong.players.a.radius = _pong.players.a.width / 2;
+            _pong.players.a.refresh();
+            _pong.players.b.width = 0.016 * window.innerWidth;
+            _pong.players.b.height = 0.15 * window.innerHeight;
+            _pong.players.b.radius = _pong.players.b.width / 2;
+            _pong.players.b.refresh();
+
+            _pong.setBallSpeed(_pong._windowRatio / 80000);
+
+            _pong._defaultPlayerSpeed = _pong.players.a.speed = _pong.players.b.speed = _pong._windowRatio / 2400;
+
+            if (_pong.currentGameMode === 'SINGLE_PLAYER') {
+                _pong.players.b.speed = _pong._defaultPlayerSpeed / _pong._playerSpeedHandicap;
+            }
+
+            _pong.resize();
+
+            return this;
+        };
+
+        func(); // call for initial resize
+        return func;
+    },
+
+    startSinglePlayer: function(_pong) {
+        _pong.currentGameMode = 'SINGLE_PLAYER';
+        window._pong.reset();
+
+        _pong.players.a.resetControls();
+        _pong.players.b.resetControls();
+
+        // player a controls
+        _pong.players.a.addControls({
+            'up': 'up',
+            'down': 'down',
+        });
+        _pong.players.a.touch.enable();
+        _pong.players.a.height = 0.15 * window.innerHeight;
+
+        _pong.players.b.touch.disable();
+        _pong.players.b.speed = _pong._defaultPlayerSpeed / _pong._playerSpeedHandicap;
+        _pong.players.b.height = 0.15 * window.innerHeight;
+
+        _pong.on('update', _pong._AI_LOGIC_ONUPDATE = function(_pong) {
+            // player b / ai logic
+            if (_pong.balls.length > 0) {
+                // prediction of next position is used to prevent choppy movement which is caused by the 
+                // player passing the ball y position and on the next frame going back
+                var ballY = _pong.balls[0].y;
+                if (_pong.players.b.y < ballY && _pong.players.b.predictPosition(1).y < ballY) {
+                    _pong.players.b.move(1);
+                } else if (_pong.players.b.y > ballY && _pong.players.b.predictPosition(-1).y > ballY) {
+                    _pong.players.b.move(-1);
+                }
+            }
+        });
+
+        _pong.on('point', function(player) {
+            _pong.setBallSpeed(_pong._windowRatio / 80000);
+            _pong.players.a.setHeight(0.15 * window.innerHeight);
+        });
+
+        _pong.on('hit', function(_pong) {
+            if (_pong.hits % 2 === 0) {
+                _pong.setBallSpeed(_pong.balls[0].speed * 1.1);
+                _pong.players.a.setHeight(_pong.players.a.height * 0.8);
+            }
+        });
+
+        _pong.reset();
+        _pong.won = false;
+        _pong.loop.play();
+        _pong.start();
+    },
+
+    startTwoPlayer: function(_pong) {
+        _pong.currentGameMode = 'TWO_PLAYER';
+        window._pong.reset();
+
+        _pong.players.a.resetControls();
+        _pong.players.b.resetControls();
+
+        // player a controls
+        _pong.players.a.addControls({
+            'up': 'w',
+            'down': 's',
+        });
+        _pong.players.a.touch.enable();
+        _pong.players.a.height = 0.15 * window.innerHeight;
+
+        _pong.players.b.addControls({
+            'up': 'up',
+            'down': 'down',
+        });
+        _pong.players.b.touch.enable();
+        _pong.players.b.speed = _pong._defaultPlayerSpeed;
+        _pong.players.b.height = 0.15 * window.innerHeight;
+
+        if (_pong._AI_LOGIC_ONUPDATE !== undefined) {
+            // remove on update ai logic
+            _pong.off('update', _pong._AI_LOGIC_ONUPDATE);
+        }
+
+        _pong.reset();
+        _pong.won = false;
+        _pong.loop.play();
+        _pong.start();
+    }
+};
+},{}],221:[function(require,module,exports){
+var $ = require('jquery'),
+    screenfull = require('screenfull');
+
+module.exports = {
+    setup: function(_pong, PongHelpers) {
+        $(document).ready(function() {
+            var hs = localStorage.getItem('SINGLE_PLAYER_HIGHSCORE'),
+                $menu = $('#menu'),
+                $fullScrnBtn = $('.fullscrn-btn');
+
+            $('.header-highscore-score').text(hs !== null ? hs : 0);
+
+            $('.header-logo').click(function() {
+                toggleMenu();
+            });
+
+            $('#close-menu-btn').click(function() {
+                // since the close button is always visible when the modal is visible 
+                // this will always go through the modal hiding procedure
+                toggleMenu();
+            });
+
+            $(this).keyup(function(e) {
+                if (e.keyCode === 27) { // esc
+                    toggleMenu();
+                }
+            });
+
+            $('#singlep-menu-btn').click(function() {
+                $menu.addClass('hidden');
+                // start game in single player
+                PongHelpers.startSinglePlayer(_pong);
+                $('.header-highscore').css('visibility', 'visible');
+            });
+
+            $('#twop-menu-btn').click(function() {
+                $menu.addClass('hidden');
+                // start game in 2 player
+                PongHelpers.startTwoPlayer(_pong);
+                $('.header-highscore').css('visibility', 'hidden');
+            });
+
+            function toggleMenu() {
+                if ($menu.hasClass('hidden')) {
+                    // if menu is closed, open
+                    $menu.removeClass('hidden');
+
+                    var $closeBtn = $('button.close-btn');
+                    if (_pong.started === true) {
+                        _pong.pause()
+                        $closeBtn.show();
+                    } else {
+                        $closeBtn.hide();
+                    }
+                } else if (_pong.started === true) {
+                    // if menu is open
+                    _pong.resume()
+                    $menu.addClass('hidden');
+                    $('button.close-btn').show();
+                }
+            }
+
+            if (screenfull.enabled) {
+                if (screenfull.isFullscreen == false) {
+                    // set initial state
+                    $fullScrnBtn.removeClass('hidden');
+                }
+
+                $fullScrnBtn.click(function(event) {
+                    event.preventDefault();
+                    screenfull.request();
+                });
+
+                document.addEventListener(screenfull.raw.fullscreenchange, function() {
+                    console.log('Am I fullscreen? ' + (screenfull.isFullscreen ? 'Yes' : 'No'));
+                    if (screenfull.isFullscreen == false) {
+                        $fullScrnBtn.removeClass('hidden');
+                    } else {
+                        $fullScrnBtn.addClass('hidden');
+                        // adjust game to new resoltion because resize event is not triggerd on fullscreen
+                        setTimeout(function() {
+                            // fullscreen mode takes a few ms to take affect
+                            _pong.resize();
+                        }, 500)
+                    }
+                });
+            }
+
+            // go through showing procedure
+            toggleMenu();
+        });
+    }
+};
+},{"jquery":39,"screenfull":215}]},{},[219]);
