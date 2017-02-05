@@ -118,7 +118,11 @@ module.exports = {
 
     setupResizeLogicFunc: function(_pong) {
         var func = function() {
-            console.info('Pong: resized!');
+            console.info('[pong]: resized!');
+            console.info('[window] inner - width:', window.innerWidth, 'height:', window.innerHeight);
+            console.info('[window] outer - width:', window.outerWidth, 'height:', window.outerHeight);
+            console.info('[pong] renderer - width:', _pong.renderer.width, 'height:', _pong.renderer.width);
+
             var pongElement = document.getElementById('pong');
             _pong._windowRatio = window.innerWidth * window.innerHeight;
 

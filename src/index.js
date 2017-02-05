@@ -5,12 +5,19 @@ var PongHelpers = require('./pong-helpers.js'),
     UI = require('./ui.js');
 
 window.onload = function() {
+    console.info('[window] window.onload triggered');
+    console.info('[window] inner - width:', window.innerWidth, 'height:', window.innerHeight);
+    console.info('[window] outer - width:', window.outerWidth, 'height:', window.outerHeight);
+
     var pongElement = document.getElementById('pong'),
         _pong = window._pong = new Pong(pongElement, {
             screens: {
                 enable: false
             }
         });
+
+    console.info('[pong] renderer - width:', _pong.renderer.width, 'height:', _pong.renderer.width);
+    console.info('[pong] renderer - type:', _pong.renderer.type);
 
     UI.setup(_pong, PongHelpers);
 
