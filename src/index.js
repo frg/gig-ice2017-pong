@@ -27,6 +27,9 @@ window.onload = function() {
     _pong._defaultPlayerHeight = function() {
         return 0.15 * window.innerHeight;
     };
+    _pong._defaultPlayerWidth = function() {
+        return 0.016 * window.innerWidth;
+    };
     _pong._defaultBallSpeed = function() {
         return (window.innerWidth * window.innerHeight) / 80000;
     };

@@ -52544,6 +52544,9 @@ window.onload = function() {
     _pong._defaultPlayerHeight = function() {
         return 0.15 * window.innerHeight;
     };
+    _pong._defaultPlayerWidth = function() {
+        return 0.016 * window.innerWidth;
+    };
     _pong._defaultBallSpeed = function() {
         return (window.innerWidth * window.innerHeight) / 80000;
     };
@@ -52622,7 +52625,6 @@ function startSinglePlayer(_pong) {
     _pong.currentGameMode = 'SINGLE_PLAYER';
     resetGame(_pong);
 
-    // player a controls
     _pong.players.a.addControls({
         'up': 'up',
         'down': 'down',
@@ -52695,12 +52697,12 @@ module.exports = {
 
             pongElement.style.height = window.innerHeight + 'px';
 
-            _pong.players.a.width = 0.016 * window.innerWidth;
-            _pong.players.a.height = 0.15 * window.innerHeight;
+            _pong.players.a.width = _pong._defaultPlayerWidth();
+            _pong.players.a.height = _pong._defaultPlayerHeight();
             _pong.players.a.radius = _pong.players.a.width / 2;
             _pong.players.a.refresh();
-            _pong.players.b.width = 0.016 * window.innerWidth;
-            _pong.players.b.height = 0.15 * window.innerHeight;
+            _pong.players.b.width = _pong._defaultPlayerWidth();
+            _pong.players.b.height = _pong._defaultPlayerHeight();
             _pong.players.b.radius = _pong.players.b.width / 2;
             _pong.players.b.refresh();
 
