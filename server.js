@@ -1,6 +1,8 @@
 var express = require('express'),
     app = express();
 
+var port = process.env.port || 1337;
+
 app.use('/', express.static(__dirname + '/public'));
 
 app.use(function(req, res, next) {
@@ -11,6 +13,6 @@ app.get('/', function(req, res) {
     res.send('./public/index.html');
 });
 
-app.listen(3003, function() {
-    console.log('listening on port 3003!');
+app.listen(port, function() {
+    console.log('listening on port ' + port + '!');
 });
