@@ -52531,7 +52531,15 @@ window.onload = function() {
 
     UI.setup(_pong, PongHelpers);
 
-    _pong._defaultPlayerSpeed = (window.innerWidth * window.innerHeight) / 4000;
+    _pong._defaultPlayerSpeed = function() {
+        return (window.innerWidth * window.innerHeight) / 4000;
+    };
+    _pong._defaultPlayerHeight = function() {
+        return 0.15 * window.innerHeight;
+    };
+    _pong._defaultBallSpeed = function() {
+        return (window.innerWidth * window.innerHeight) / 80000;
+    };
     _pong._playerSpeedHandicap = 3;
 
     // pong.showStats(); // show fps counter
@@ -52550,7 +52558,94 @@ window.onload = function() {
     PongHelpers.setupIgcTheme(_pong);
 };
 },{"./pong-helpers.js":220,"./ui.js":221,"Pong.js":7,"jquery":39}],220:[function(require,module,exports){
+function resetGame(_pong) {
+    _pong.reset();
+
+    _pong.off('update', __ONUPDATE_AI_LOGIC);
+    _pong.off('point', __ONPOINT_RESETONHIT_HANDICAP);
+    _pong.off('hit', __ONHIT_HANDICAP);
+
+    _pong.players.a.resetControls();
+    _pong.players.b.resetControls();
+
+    _pong.players.a.touch.enable();
+    _pong.players.b.touch.enable();
+
+    _pong.players.a.setHeight(_pong._defaultPlayerHeight())
+    _pong.players.b.setHeight(_pong._defaultPlayerHeight());
+
+    _pong.players.a.speed = _pong.players.b.speed = _pong._defaultPlayerSpeed();
+
+    _pong.reset();
+    _pong.won = false;
+    _pong.loop.play();
+    _pong.start();
+}
+
+var __ONPOINT_RESETONHIT_HANDICAP = function(player) {
+        this.setBallSpeed(this._defaultBallSpeed());
+        this.players.a.setHeight(this._defaultPlayerHeight());
+
+        if (player === this.players.b) {
+            // reset when player b wins a point
+            startSinglePlayer(this);
+        }
+    },
+    __ONHIT_HANDICAP = function() {
+        if (this.hits % 2 === 0) {
+            this.setBallSpeed(this.balls[0].speed * 1.1);
+            this.players.a.setHeight(this.players.a.height * 0.8);
+        }
+    },
+    __ONUPDATE_AI_LOGIC = function(player) {
+        // player b / ai logic
+        if (this.balls.length > 0) {
+            // prediction of next position is used to prevent choppy movement which is caused by the 
+            // player passing the ball y position and on the next frame going back
+            var ballY = this.balls[0].y;
+            if (this.players.b.y < ballY && this.players.b.predictPosition(1).y < ballY) {
+                this.players.b.move(1);
+            } else if (this.players.b.y > ballY && this.players.b.predictPosition(-1).y > ballY) {
+                this.players.b.move(-1);
+            }
+        }
+    };
+
+function startSinglePlayer(_pong) {
+    _pong.currentGameMode = 'SINGLE_PLAYER';
+    resetGame(_pong);
+
+    // player a controls
+    _pong.players.a.addControls({
+        'up': 'up',
+        'down': 'down',
+    });
+
+    _pong.players.b.touch.disable();
+    _pong.players.b.speed = _pong._defaultPlayerSpeed() / _pong._playerSpeedHandicap;
+
+    _pong.on('update', __ONUPDATE_AI_LOGIC);
+    _pong.on('point', __ONPOINT_RESETONHIT_HANDICAP);
+    _pong.on('hit', __ONHIT_HANDICAP);
+}
+
+function startTwoPlayer(_pong) {
+    _pong.currentGameMode = 'TWO_PLAYER';
+    resetGame(_pong);
+
+    _pong.players.a.addControls({
+        'up': 'w',
+        'down': 's',
+    });
+    _pong.players.b.addControls({
+        'up': 'up',
+        'down': 'down',
+    });
+}
+
 module.exports = {
+    resetGame: resetGame,
+
     setupIgcTheme: function(_pong) {
         _pong.setScoreDisplayColor('#2f3448');
         _pong.setLinesColor('#51566a');
@@ -52579,8 +52674,6 @@ module.exports = {
             fontStyle: 'bold',
             fontSize: '80px'
         });
-
-        return this;
     },
 
     setupResizeLogicFunc: function(_pong) {
@@ -52600,12 +52693,10 @@ module.exports = {
             _pong.players.b.radius = _pong.players.b.width / 2;
             _pong.players.b.refresh();
 
-            _pong.setBallSpeed(_pong._windowRatio / 80000);
-
-            _pong._defaultPlayerSpeed = _pong.players.a.speed = _pong.players.b.speed = _pong._windowRatio / 2400;
+            _pong.setBallSpeed(_pong._defaultBallSpeed());
 
             if (_pong.currentGameMode === 'SINGLE_PLAYER') {
-                _pong.players.b.speed = _pong._defaultPlayerSpeed / _pong._playerSpeedHandicap;
+                _pong.players.b.speed = _pong._defaultPlayerSpeed() / _pong._playerSpeedHandicap;
             }
 
             _pong.resize();
@@ -52617,90 +52708,9 @@ module.exports = {
         return func;
     },
 
-    startSinglePlayer: function(_pong) {
-        _pong.currentGameMode = 'SINGLE_PLAYER';
-        window._pong.reset();
+    startSinglePlayer: startSinglePlayer,
 
-        _pong.players.a.resetControls();
-        _pong.players.b.resetControls();
-
-        // player a controls
-        _pong.players.a.addControls({
-            'up': 'up',
-            'down': 'down',
-        });
-        _pong.players.a.touch.enable();
-        _pong.players.a.height = 0.15 * window.innerHeight;
-
-        _pong.players.b.touch.disable();
-        _pong.players.b.speed = _pong._defaultPlayerSpeed / _pong._playerSpeedHandicap;
-        _pong.players.b.height = 0.15 * window.innerHeight;
-
-        _pong.on('update', _pong._AI_LOGIC_ONUPDATE = function(_pong) {
-            // player b / ai logic
-            if (_pong.balls.length > 0) {
-                // prediction of next position is used to prevent choppy movement which is caused by the 
-                // player passing the ball y position and on the next frame going back
-                var ballY = _pong.balls[0].y;
-                if (_pong.players.b.y < ballY && _pong.players.b.predictPosition(1).y < ballY) {
-                    _pong.players.b.move(1);
-                } else if (_pong.players.b.y > ballY && _pong.players.b.predictPosition(-1).y > ballY) {
-                    _pong.players.b.move(-1);
-                }
-            }
-        });
-
-        _pong.on('point', function(player) {
-            _pong.setBallSpeed(_pong._windowRatio / 80000);
-            _pong.players.a.setHeight(0.15 * window.innerHeight);
-        });
-
-        _pong.on('hit', function(_pong) {
-            if (_pong.hits % 2 === 0) {
-                _pong.setBallSpeed(_pong.balls[0].speed * 1.1);
-                _pong.players.a.setHeight(_pong.players.a.height * 0.8);
-            }
-        });
-
-        _pong.reset();
-        _pong.won = false;
-        _pong.loop.play();
-        _pong.start();
-    },
-
-    startTwoPlayer: function(_pong) {
-        _pong.currentGameMode = 'TWO_PLAYER';
-        window._pong.reset();
-
-        _pong.players.a.resetControls();
-        _pong.players.b.resetControls();
-
-        // player a controls
-        _pong.players.a.addControls({
-            'up': 'w',
-            'down': 's',
-        });
-        _pong.players.a.touch.enable();
-        _pong.players.a.height = 0.15 * window.innerHeight;
-
-        _pong.players.b.addControls({
-            'up': 'up',
-            'down': 'down',
-        });
-        _pong.players.b.touch.enable();
-        _pong.players.b.speed = _pong._defaultPlayerSpeed;
-        _pong.players.b.height = 0.15 * window.innerHeight;
-
-        if (_pong._AI_LOGIC_ONUPDATE !== undefined) {
-            // remove on update ai logic
-            _pong.off('update', _pong._AI_LOGIC_ONUPDATE);
-        }
-
-        _pong.reset();
-        _pong.won = false;
-        _pong.loop.play();
-        _pong.start();
-    }
+    startTwoPlayer: startTwoPlayer
 };
 },{}],221:[function(require,module,exports){
 var $ = require('jquery'),

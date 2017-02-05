@@ -14,7 +14,15 @@ window.onload = function() {
 
     UI.setup(_pong, PongHelpers);
 
-    _pong._defaultPlayerSpeed = (window.innerWidth * window.innerHeight) / 4000;
+    _pong._defaultPlayerSpeed = function() {
+        return (window.innerWidth * window.innerHeight) / 4000;
+    };
+    _pong._defaultPlayerHeight = function() {
+        return 0.15 * window.innerHeight;
+    };
+    _pong._defaultBallSpeed = function() {
+        return (window.innerWidth * window.innerHeight) / 80000;
+    };
     _pong._playerSpeedHandicap = 3;
 
     // pong.showStats(); // show fps counter
