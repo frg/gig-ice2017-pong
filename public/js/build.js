@@ -52540,7 +52540,7 @@ window.onload = function() {
     _pong._defaultBallSpeed = function() {
         return (window.innerWidth * window.innerHeight) / 80000;
     };
-    _pong._playerSpeedHandicap = 3;
+    _pong._playerSpeedHandicap = 2;
 
     // pong.showStats(); // show fps counter
     window.onresize = PongHelpers.setupResizeLogicFunc(_pong);
