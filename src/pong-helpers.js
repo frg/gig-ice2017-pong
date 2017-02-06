@@ -10,6 +10,9 @@ function resetGame(_pong) {
 
     _pong.players.a.touch.enable();
     _pong.players.b.touch.enable();
+    
+    _pong.players.a.mouse.enable();
+    _pong.players.b.mouse.enable();
 
     _pong.players.a.setHeight(_pong._defaultPlayerHeight())
     _pong.players.b.setHeight(_pong._defaultPlayerHeight());
@@ -64,7 +67,8 @@ function startSinglePlayer(_pong) {
         'down': 'down',
     });
 
-    _pong.players.b.touch.disable();
+    _pong.players.b.touch.disable();    
+    _pong.players.b.mouse.disable();
     _pong.players.b.speed = _pong._defaultPlayerSpeed() / _pong._playerSpeedHandicap;
 
     _pong.on('update', __ONUPDATE_AI_LOGIC);
