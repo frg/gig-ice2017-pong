@@ -40,6 +40,7 @@ window.onload = function() {
 
     _pong.on('point', function(player) {
         if (_pong.currentGameMode === 'SINGLE_PLAYER' && _pong.players.a === player) {
+            // if single player and player a made a point, do score logic
             var hs = localStorage.getItem('SINGLE_PLAYER_HIGHSCORE');
             if (hs === null || (hs !== null && player.score > hs)) {
                 localStorage.setItem('SINGLE_PLAYER_HIGHSCORE', player.score);

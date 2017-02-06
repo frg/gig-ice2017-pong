@@ -52557,6 +52557,7 @@ window.onload = function() {
 
     _pong.on('point', function(player) {
         if (_pong.currentGameMode === 'SINGLE_PLAYER' && _pong.players.a === player) {
+            // if single player and player a made a point, do score logic
             var hs = localStorage.getItem('SINGLE_PLAYER_HIGHSCORE');
             if (hs === null || (hs !== null && player.score > hs)) {
                 localStorage.setItem('SINGLE_PLAYER_HIGHSCORE', player.score);
@@ -52593,6 +52594,8 @@ function resetGame(_pong) {
 }
 
 var __ONPOINT_RESETONHIT_HANDICAP = function(player) {
+        console.info('[pong]: on point');
+
         this.setBallSpeed(this._defaultBallSpeed());
         this.players.a.setHeight(this._defaultPlayerHeight());
 
@@ -52602,6 +52605,8 @@ var __ONPOINT_RESETONHIT_HANDICAP = function(player) {
         }
     },
     __ONHIT_HANDICAP = function() {
+        console.info('[pong]: on hit');
+
         if (this.hits % 2 === 0) {
             this.setBallSpeed(this.balls[0].speed * 1.1);
             this.players.a.setHeight(this.players.a.height * 0.8);

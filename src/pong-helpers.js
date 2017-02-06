@@ -23,6 +23,8 @@ function resetGame(_pong) {
 }
 
 var __ONPOINT_RESETONHIT_HANDICAP = function(player) {
+        console.info('[pong]: on point');
+
         this.setBallSpeed(this._defaultBallSpeed());
         this.players.a.setHeight(this._defaultPlayerHeight());
 
@@ -32,6 +34,8 @@ var __ONPOINT_RESETONHIT_HANDICAP = function(player) {
         }
     },
     __ONHIT_HANDICAP = function() {
+        console.info('[pong]: on hit');
+
         if (this.hits % 2 === 0) {
             this.setBallSpeed(this.balls[0].speed * 1.1);
             this.players.a.setHeight(this.players.a.height * 0.8);
