@@ -1,4 +1,5 @@
 function resetGame(_pong) {
+    console.log('[pong] reseting game');
     _pong.reset();
 
     _pong.off('update', __ONUPDATE_AI_LOGIC);
@@ -21,7 +22,7 @@ function resetGame(_pong) {
 
     _pong.reset();
     _pong.won = false;
-    _pong.loop.play();
+    _pong.loop.stop();
     _pong.start();
 }
 

@@ -1,5 +1,6 @@
 var Pong = window.Pong = require('Pong.js'),
-    $ = require('jquery');
+    $ = require('jquery')
+    _ = require('lodash');
 
 var PongHelpers = require('./pong-helpers.js'),
     UI = require('./ui.js');
@@ -8,6 +9,14 @@ window.onload = function() {
     console.info('[window] window.onload triggered');
     console.info('[window] inner - width:', window.innerWidth, 'height:', window.innerHeight);
     console.info('[window] outer - width:', window.outerWidth, 'height:', window.outerHeight);
+
+    // For some reason the update function is getting called too 
+    // many times causing lag due to event loop overcrowding.
+    // You can replicate this by by calling [pong instance].loop.play() multiple times.
+    // If you use [pong instance].showStats() it will highlight the issue.
+    // Thus as a quick fix I'm throttling the update function
+    var _oldUpdate = Pong.prototype.update;
+    Pong.prototype.update = _.throttle(_oldUpdate, 10, { 'trailing': false });
 
     var pongElement = document.getElementById('pong'),
         _pong = window._pong = new Pong(pongElement, {
