@@ -25,13 +25,13 @@ window.onload = function() {
             }
         });
 
-    console.info('[pong] renderer - width:', _pong.renderer.width, 'height:', _pong.renderer.width);
+    console.info('[pong] renderer - width:', _pong.renderer.width, 'height:', _pong.renderer.height);
     console.info('[pong] renderer - type:', _pong.renderer.type);
 
     UI.setup(_pong, PongHelpers);
 
     _pong._defaultPlayerSpeed = function() {
-        return (window.innerWidth * window.innerHeight) / 4000;
+        return (window.innerWidth * window.innerHeight) / 3000;
     };
     _pong._defaultPlayerHeight = function() {
         return 0.15 * window.innerHeight;
@@ -42,9 +42,9 @@ window.onload = function() {
     _pong._defaultBallSpeed = function() {
         return (window.innerWidth * window.innerHeight) / 80000;
     };
-    _pong._playerSpeedHandicap = 2;
+    _pong._playerSpeedHandicap = 1.6;
 
-    // pong.showStats(); // show fps counter
+    // _pong.showStats(); // show fps counter
     window.onresize = PongHelpers.setupResizeLogicFunc(_pong);
 
     _pong.on('point', function(player) {
