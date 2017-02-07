@@ -69994,7 +69994,7 @@ module.exports = {
                         setTimeout(function() {
                             // fullscreen mode takes a few ms to take affect
                             _pong.resize();
-                        }, 500)
+                        }, 1500)
                     }
                 });
             }
